@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Kaisei+Decol:wght@400;700&display=swap');
   :root{--bg:#fdf0f5;--text:#5a3a4a;--shadow:#e8b4cc;}
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:var(--bg);font-family:'Kaisei Decol','Hiragino Maru Gothic Pro',cursive;overflow:hidden;touch-action:none;height:100vh;width:100vw;}
+  html{height:100%;}
+  body{background:var(--bg);font-family:'Kaisei Decol','Hiragino Maru Gothic Pro',cursive;overflow:hidden;touch-action:none;height:100vh;height:100dvh;width:100vw;position:fixed;inset:0;}
   body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,#f4a7c344 1.5px,transparent 1.5px);background-size:28px 28px;pointer-events:none;z-index:0;}
   #gameCanvas{display:block;position:relative;z-index:1;}
   #ui{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;pointer-events:none;z-index:10;gap:8px;}
@@ -21,9 +22,6 @@
   @keyframes wobble{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(6deg) scale(1.06)}}
   .btn{background:linear-gradient(135deg,#f4a7c3 0%,#e8527a 100%);color:white;border:none;border-radius:999px;padding:14px 44px;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 6px 0 #c04060;transition:transform 0.1s,box-shadow 0.1s;font-family:inherit;}
   .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #c04060;}
-  #mobileControls{position:fixed;bottom:24px;left:0;right:0;display:none;justify-content:space-between;padding:0 20px;z-index:10;pointer-events:none;}
-  .side-btn{width:100px;height:80px;background:rgba(255,255,255,0.88);border:3px solid var(--shadow);border-radius:20px;font-size:36px;cursor:pointer;box-shadow:0 5px 0 #e8b4cc;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none;pointer-events:all;transition:transform 0.08s;}
-  .side-btn:active{transform:translateY(4px);box-shadow:0 1px 0 #e8b4cc;}
   .float-text{position:fixed;pointer-events:none;font-size:24px;font-weight:700;font-family:'Kaisei Decol',cursive;color:#e8527a;text-shadow:0 2px 8px rgba(244,167,195,0.6);animation:floatUp 0.9s ease-out forwards;z-index:50;}
   @keyframes floatUp{from{transform:translateY(0) scale(1.2);opacity:1}to{transform:translateY(-80px) scale(0.5);opacity:0}}
   #warningMsg{position:fixed;top:64px;left:50%;transform:translateX(-50%);background:rgba(231,76,60,0.88);color:white;border-radius:999px;padding:6px 22px;font-size:16px;font-weight:700;box-shadow:0 4px 0 #a02020;z-index:20;display:none;font-family:inherit;}
