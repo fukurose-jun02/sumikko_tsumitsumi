@@ -17,9 +17,26 @@ CHAR_KEYS.forEach(key => {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 let W, H;
-function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+// 実際に見えている領域を使う（iOS Safari等で下部ツールバーにお皿が隠れないように）
+function resize(){
+  const vw = (window.visualViewport && window.visualViewport.width)  || window.innerWidth;
+  const vh = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  W = canvas.width  = Math.round(vw);
+  H = canvas.height = Math.round(vh);
+}
+function getPlateY(){ return H - 100; }
 resize();
-window.addEventListener('resize',()=>{ resize(); plate.y=H-100; });
+function onViewportChange(){
+  resize();
+  plate.y = getPlateY();
+  plate.x = Math.max(plate.w/2+8, Math.min(W-plate.w/2-8, plate.x || W/2));
+}
+window.addEventListener('resize', onViewportChange);
+window.addEventListener('orientationchange', onViewportChange);
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', onViewportChange);
+  window.visualViewport.addEventListener('scroll', onViewportChange);
+}
 
 // ===== お皿の設定 =====
 // 縁（へり）の高さ — キャラがここでせき止められる
@@ -669,7 +686,7 @@ function startTimer(){
 
 function startGame(){
   score=0; elapsed=0; spawnTimer=0;
-  plate.x=W/2; plate.y=H-100; plate.vx=0; plate.prevVx=0;
+  plate.x=W/2; plate.y=getPlateY(); plate.vx=0; plate.prevVx=0;
   fallings=[]; stacked=[]; particles=[];
   crane.x=getBoxX(); crane.armY=0; crane.armOpenAng=1;
   crane.state=CRANE_STATES.TO_BOX; crane.stateTimer=0; crane.heldImgKey=null;
@@ -694,27 +711,19 @@ function endGame(){
 }
 
 let keys={},touchActive=false,touchTargetX=0;
-const isMobile=/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-if(isMobile) document.getElementById('mobileControls').style.display='flex';
 
 document.addEventListener('keydown',e=>{keys[e.key]=true;});
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 canvas.addEventListener('mousemove',e=>{if(gameRunning){touchActive=true;touchTargetX=e.clientX;}});
 canvas.addEventListener('mouseleave',()=>{touchActive=false;});
+// 指でお皿を直接うごかす（矢印ボタンは廃止）
+canvas.addEventListener('touchstart',e=>{e.preventDefault();if(gameRunning){touchActive=true;touchTargetX=e.touches[0].clientX;}},{passive:false});
 canvas.addEventListener('touchmove',e=>{e.preventDefault();if(gameRunning){touchActive=true;touchTargetX=e.touches[0].clientX;}},{passive:false});
 canvas.addEventListener('touchend',()=>{touchActive=false;});
-
-const btnL=document.getElementById('btn-left'),btnR=document.getElementById('btn-right');
-btnL.addEventListener('touchstart',e=>{e.preventDefault();keys['ArrowLeft']=true;},{passive:false});
-btnL.addEventListener('touchend',()=>keys['ArrowLeft']=false);
-btnR.addEventListener('touchstart',e=>{e.preventDefault();keys['ArrowRight']=true;},{passive:false});
-btnR.addEventListener('touchend',()=>keys['ArrowRight']=false);
-btnL.addEventListener('mousedown',()=>keys['ArrowLeft']=true); btnL.addEventListener('mouseup',()=>keys['ArrowLeft']=false);
-btnR.addEventListener('mousedown',()=>keys['ArrowRight']=true); btnR.addEventListener('mouseup',()=>keys['ArrowRight']=false);
 
 document.getElementById('startBtn').addEventListener('click',startGame);
 document.getElementById('retryBtn').addEventListener('click',()=>{document.getElementById('resultPanel').style.display='none';startGame();});
 
-resize(); plate.y=H-100;
+resize(); plate.y=getPlateY();
 crane.x = typeof getBoxX === 'function' ? getBoxX() : W-54;
 drawBackground(); drawToyBox(); drawCrane(); drawPlate();
